@@ -18,10 +18,12 @@
 #SBATCH -p short
 set -euo pipefail
 
-module purge
-module load miniconda3
-eval "$(conda shell.bash hook)"
+# FT3: source the system conda directly (`module load miniconda3` gives no
+# working conda on this cluster). See hpc/setup_env.sh.
+source /opt/cesga/2020/software/Core/miniconda3/22.11.1-1/etc/profile.d/conda.sh
+set +u   # env carries the conda build toolchain; its activation script trips set -u
 conda activate "${ENV_NAME:-ft3hapc}"
+set -u
 
 export HAPC_FRAC=1.0
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK:-8}

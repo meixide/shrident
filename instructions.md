@@ -32,7 +32,7 @@ The original LaTeX (`lalonde_application.tex`) is **never modified**.
 | What | Filesystem | Why |
 |---|---|---|
 | The cloned repo + run | **`$LUSTRE`** (1 TB, high-speed, no backup) | FT3 docs: compute jobs run from `$LUSTRE`. |
-| Conda env | **`$STORE/.conda`** (500 GB) | `$HOME` is only 10 GB and a full `$HOME` crashes services. |
+| Conda env | **`$STORE/conda/envs`** (500 GB) | `$HOME` is only 10 GB and a full `$HOME` crashes services; this account's `~/.condarc` already routes envs/pkgs to `$STORE/conda`. |
 | Final result CSVs | `$STORE/shrinkage_results/` | `$STORE` has snapshots; the aggregate job copies them there. |
 
 ```bash
@@ -52,16 +52,32 @@ bash hpc/setup_env.sh          # run on a LOGIN node (it compiles hapc); not via
 ```
 
 This (see [hpc/setup_env.sh](hpc/setup_env.sh)):
-1. redirects conda storage to `$STORE/.conda` (per the FT3 guide);
-2. `module load miniconda3` (the **system** miniconda — do **not** install your
-   own) plus a compiler + `cmake` to build `hapc`'s C++/pybind11 extension;
-3. creates env **`ft3hapc`** with `numpy(<2.3)`, `pandas`, `scikit-learn`,
-   `scipy`, `statsmodels`;
-4. `git clone https://github.com/meixide/hapc` and `pip install .`;
-5. runs a smoke test.
+1. ensures `$STORE/conda/{envs,pkgs}` exist (env placement is governed by this
+   account's existing `~/.condarc`, which already routes envs to
+   `$STORE/conda/envs`);
+2. activates the **system** conda — do **not** install your own. On FT3 plain
+   `module load miniconda3` loads `4.11.0` and yields **no working conda**, so
+   the script sources the `22.11.1-1` build directly (conda 23.7.4):
+   `source /opt/cesga/2020/software/Core/miniconda3/22.11.1-1/etc/profile.d/conda.sh`;
+3. creates env **`ft3hapc`** (python 3.11) with `numpy(<2.3)`, `pandas`,
+   `scikit-learn`, `scipy`, `statsmodels`;
+4. installs the **conda** compiler toolchain and builds `hapc` from
+   `git clone https://github.com/meixide/hapc` with it. **This is essential:**
+   the gentoo `cesga/2020` gcc links against glibc 2.31, so its `hapc_core.so`
+   requires `GLIBC_2.29` — which the system runtime glibc (2.28, RHEL 8.4) the
+   conda python uses does **not** provide, giving an `ImportError`. The build
+   therefore needs three FT3-specific pieces (all in `setup_env.sh`): pinned
+   `gcc_linux-64=12`/`gxx_linux-64=12` (gcc 15's libstdc++ won't compile
+   pybind11's `<chrono>` here) on a **`sysroot_linux-64=2.17`** (the default
+   2.12 sysroot predates `timespec_get`), with `CXXFLAGS=-D_ISOC11_SOURCE` (the
+   2.17 sysroot's pre-C++17 `<features.h>` only declares it under that macro)
+   and **`unset LIBRARY_PATH`** (else the gentoo lib64 makes the linker bind
+   `exp`/`log`@`GLIBC_2.29`). Result: a `.so` needing only `GLIBC ≤ 2.14`;
+5. runs a smoke test (imports `hapc` and runs a tiny `cv_hapc` fit).
 
-> Verify the exact module name first if the load fails: `module spider miniconda3`
-> (and `module spider gcc cmake`). Override the env name or hapc URL with
+> If CESGA retires the `22.11.1-1` build, pick the current one from
+> `module avail miniconda3` and update the `source …/conda.sh` path in
+> `hpc/*.sh`. Override the env name or hapc URL with
 > `ENV_NAME=... HAPC_REPO=... bash hpc/setup_env.sh`.
 
 ---
@@ -154,11 +170,22 @@ Locally you can reproduce the dry-run with `HAPC_FRAC=0.25 python data/lalonde_f
 
 - **OOM / `oom-kill`** → raise `--mem-per-cpu` (e.g. `8G`) in the submit script;
   inspect actual use with `seff <jobid>`.
-- **`conda: command not found` in the job** → ensure the script has
-  `module load miniconda3` then `eval "$(conda shell.bash hook)"` before
-  `conda activate` (the provided scripts do this).
-- **`hapc` import error** → rebuild: it needs a compiler + `cmake` at build time
-  (`module load gcc cmake`); confirm `numpy<2.3`.
+- **`conda: command not found` in the job** → on FT3 `module load miniconda3`
+  does **not** give a working conda; the scripts instead
+  `source /opt/cesga/2020/software/Core/miniconda3/22.11.1-1/etc/profile.d/conda.sh`
+  before `conda activate` (the provided scripts do this). If that build is gone,
+  pick the current one from `module avail miniconda3` and update the path.
+- **`hapc` import error: `/lib64/libm.so.6: version GLIBC_2.29 not found`** →
+  the extension was built against the gentoo `cesga/2020` glibc (2.31) but the
+  conda python runs on the system glibc (2.28). Rebuild it with the conda
+  toolchain exactly as `setup_env.sh` step 4 does — the three things that matter
+  are: `sysroot_linux-64=2.17`, `CXXFLAGS=-D_ISOC11_SOURCE`, and
+  `unset LIBRARY_PATH` before `pip install --force-reinstall --no-deps .` in the
+  hapc clone. Verify with `objdump -T hapc_core*.so | grep -oE 'GLIBC_[0-9.]+' |
+  sort -V | tail` showing max ≤ 2.17 (we get 2.14). Also confirm `numpy<2.3`.
+  Common cause of a *fresh* failure: the gentoo `gcc_linux-64=12` build hit a
+  `'timespec_get' has not been declared` compile error → the 2.17 sysroot/
+  `_ISOC11_SOURCE` step was skipped.
 - **A `BOUNDARY-low` CV verdict on full data** → lower `GRID['log_lambda_min']`
   in `data/lalonde_functionals_hapc.py` and resubmit just that block
   (`HAPC_BLOCK=<k>`).

@@ -1,0 +1,39 @@
+slurmstepd: info: Setting TMPDIR to /scratch/7684736. Previous errors about TMPDIR can be discarded
+host=c205-3 block=2 cores=16
+*** FULL DATA: n=3624 ***
+=== BLOCK 2 (CPS-3): functionals j=[7, 8, 9] ===
+done j=7 DIM-CPS-3
+    [cv] OM-CPS-3    gaussian best_lambda=785.8 idx 26/39 -> INTERIOR
+done j=8 OM-CPS-3
+    [cv] IPW-CPS-3   binomial best_lambda=0.01653 idx 11/39 -> INTERIOR
+done j=9 IPW-CPS-3
+
+CV: 2/2 interior. Elapsed 925.5s. Saved /mnt/lustre/scratch/nlsas/home/csic/dml/cgm/shrident/data/lalonde_functionals_hapc_block2.csv
+
+*****************************************************************************
+*                                                                           *
+*                    JOB EFFICIENCY REPORT (seff 7684736)                   *
+*                                                                           *
+*****************************************************************************
+
+Job ID: 7684736
+Array Job ID: 7684731_2
+Cluster: finisterrae3
+User/Group: csdmlcgm/csic
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 16
+CPU Utilized: 00:15:28
+CPU Efficiency: 6.22% of 04:08:32 core-walltime
+Job Wall-clock time: 00:15:32
+Memory Utilized: 497.88 MB
+Memory Efficiency: 0.76% of 64.00 GB
+
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ ++   Memory Efficiency is too small. Please review the requested memory. ++
+ ++ It seems that you do not need that much memory so we recommend        ++
+ ++ requesting less memory in other similar jobs.                         ++
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+*****************************************************************************
+
