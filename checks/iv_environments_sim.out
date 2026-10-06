@@ -1,0 +1,44 @@
+
+q=5 J=26 n=2000 pis=[0.2, 0.35, 0.5, 0.65, 0.8] gamma=0.0 | targets: mean=0.984 sd=0.013 (ATE=1.0) | mean tau2-hat=0.0184
+diagnostics: Omega-hat rank median 11 of 26; threshold n*tau2 > log n fired in 26.0% of reps; 1'Omega^+1: median 0.0344 (rcond 1e-8) vs 0.0343 (1e-4)
+coverage below is for the ATE beta; for gamma != 0 the subset targets differ from beta
+method       bias       sd     rmse  mean se cov90(ATE)
+EB        -0.0175   0.1266   0.1278   0.1211      0.868
+EB-thr    -0.0175   0.1266   0.1278   0.1211      0.868
+GLS       -0.0197   0.1259   0.1274   0.1206      0.865
+GLS-1e-4  -0.0198   0.1259   0.1274   0.1206      0.865
+2SLS      -0.0126   0.1272   0.1278   0.1216      0.873
+best      -0.0119   0.1271   0.1277   0.1215      0.875
+
+q=5 J=26 n=2000 pis=[0.2, 0.35, 0.5, 0.65, 0.8] gamma=2.0 | targets: mean=0.986 sd=0.204 (ATE=1.0) | mean tau2-hat=0.0422
+diagnostics: Omega-hat rank median 11 of 26; threshold n*tau2 > log n fired in 40.2% of reps; 1'Omega^+1: median 0.0258 (rcond 1e-8) vs 0.0258 (1e-4)
+coverage below is for the ATE beta; for gamma != 0 the subset targets differ from beta
+method       bias       sd     rmse  mean se cov90(ATE)
+EB        -0.0298   0.1481   0.1510   0.1406      0.855
+EB-thr    -0.0298   0.1481   0.1510   0.1406      0.855
+GLS       -0.0475   0.1477   0.1552   0.1392      0.838
+GLS-1e-4  -0.0476   0.1477   0.1552   0.1392      0.838
+2SLS      -0.0191   0.1489   0.1501   0.1418      0.863
+best      -0.0188   0.1488   0.1500   0.1416      0.865
+
+q=5 J=26 n=2000 pis=[0.1, 0.2, 0.3, 0.4, 0.5] gamma=2.0 | targets: mean=0.577 sd=0.140 (ATE=1.0) | mean tau2-hat=0.0246
+diagnostics: Omega-hat rank median 11 of 26; threshold n*tau2 > log n fired in 18.5% of reps; 1'Omega^+1: median 0.0142 (rcond 1e-8) vs 0.0141 (1e-4)
+coverage below is for the ATE beta; for gamma != 0 the subset targets differ from beta
+method       bias       sd     rmse  mean se cov90(ATE)
+EB        -0.4392   0.1995   0.4824   0.1910      0.287
+EB-thr    -0.4392   0.1995   0.4824   0.1910      0.287
+GLS       -0.4440   0.1972   0.4858   0.1896      0.273
+GLS-1e-4  -0.2503   2.6982   2.7097   1.2459      0.278
+2SLS      -0.4255   0.2018   0.4710   0.1924      0.297
+best      -0.4270   0.2014   0.4722   0.1921      0.295
+
+q=4 J=11 n=2000 pis=[0.2, 0.4, 0.6, 0.8] gamma=0.0 | targets: mean=0.987 sd=0.009 (ATE=1.0) | mean tau2-hat=0.0156
+diagnostics: Omega-hat rank median 8 of 11; threshold n*tau2 > log n fired in 26.2% of reps; 1'Omega^+1: median 0.0375 (rcond 1e-8) vs 0.0375 (1e-4)
+coverage below is for the ATE beta; for gamma != 0 the subset targets differ from beta
+method       bias       sd     rmse  mean se cov90(ATE)
+EB        -0.0163   0.1143   0.1155   0.1156      0.890
+EB-thr    -0.0163   0.1143   0.1155   0.1156      0.890
+GLS       -0.0172   0.1139   0.1152   0.1153      0.887
+GLS-1e-4  -0.0173   0.1139   0.1152   0.1153      0.887
+2SLS      -0.0131   0.1140   0.1148   0.1159      0.890
+best      -0.0132   0.1141   0.1148   0.1159      0.890
