@@ -45,6 +45,22 @@ def tau2_thresholded(tau2, v, n_units, kappa=None):
     return (tau2 if ratio > kappa else 0.0), bool(ratio > kappa), ratio
 
 
+def dispersion_z(psi, Sigma):
+    """Standardised dispersion of the estimates under exact identification.
+
+    S2 is the sample variance of the J estimates (the pairwise estimator is max(0, S2 - mean v)).
+    If all targets coincide, S2 = z'Cz/(J-1) with z ~ N(0, Sigma) and C the centring matrix,
+    so E(S2) = tr(C Sigma)/(J-1) and Var(S2) = 2 tr((C Sigma)^2)/(J-1)^2. With positively
+    correlated estimators E(S2) is below mean v, which is why the pairwise estimator is so
+    often zero. Returned: (S2 - E S2) / sd(S2), a diagnostic that uses the covariances.
+    """
+    J = len(psi)
+    C = np.eye(J) - 1.0 / J
+    M = C @ Sigma
+    s2 = float(psi @ C @ psi) / (J - 1)
+    return (s2 - np.trace(M) / (J - 1)) / (np.sqrt(2 * np.trace(M @ M)) / (J - 1))
+
+
 # ---------------------------------------------------------------- weights
 def eb_weights(v, tau2):
     w = 1 / (v + tau2)
@@ -71,6 +87,7 @@ def pooled(psi, Phi, n_units=None, level=0.95, kappa=None):
     t_thr, fired, ratio = tau2_thresholded(t_pair, v, n_units, kappa)
     out.update(tau_pair=np.sqrt(t_pair), tau_dl=np.sqrt(t_dl), tau2_over_mean_v=ratio,
                kappa=np.log(n_units) if kappa is None else kappa, threshold_fired=fired)
+    out.update(dispersion_z=float(dispersion_z(psi, Sigma)))
     for name, t in (("pair", t_pair), ("thr", t_thr), ("dl", t_dl)):
         w = eb_weights(v, t)
         est = float(w @ psi)
