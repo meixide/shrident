@@ -289,9 +289,12 @@ def main():
     inf = pd.DataFrame(inf_rows)
     inf.to_csv(os.path.join(out_dir, "inference.csv"), index=False, float_format="%.10g")
     show = ["set", "analysis", "J", "tau_pair", "psi_eb_pair", "se_sandwich_pair", "se_working_pair", "ci_lo_pair",
-            "ci_hi_pair", "tau2_over_mean_v", "kappa", "threshold_fired", "psi_eb_thr", "se_sandwich_thr", "best_single", "se_best_single",
+            "ci_hi_pair", "tau2_over_mean_v", "kappa", "threshold_fired", "dispersion_z", "psi_eb_thr", "se_sandwich_thr", "best_single", "se_best_single",
             "psi_gls", "se_gls", "sigma_rank", "corr_mean"]
     rep += ["", "## Pooled estimates", "",
+            "`threshold_fired` says whether the dispersion is kept by the rule tau2 > kappa * mean(v) with "
+            "kappa = log(persons); `dispersion_z` is the sample variance of the estimates standardised by its "
+            "mean and standard deviation under exact identification, computed from Sigma.", "",
             "`se_sandwich` uses the person-level influence matrix; `se_working` is the working-independence "
             "formula of arXiv v2 and is not a valid standard error.", "", md_table(inf[show], "{:.4g}")]
     if conf_rows:
