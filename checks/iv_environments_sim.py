@@ -14,7 +14,10 @@ Y(0) = c V + e. For every subset S of environments with |S| >= 2 (J = 2^q - q - 
 
 Estimators of the ATE beta:
   EB      working-independence weights w_j = 1/(v_j + tau2), pairwise tau2   (the paper)
-  EB-thr  same, tau2 set to 0 when n tau2 <= log n                           (Prop. 3(iii))
+  EB-thr  same, tau2 set to 0 unless tau2 > log(n) * mean_j v_j              (Prop. 3(iii))
+          The rule is scale-free: v_j = Omega_jj / n, so it is n tau2 > kappa_n with
+          kappa_n = log(n) * mean_j Omega_jj. Until 2026-10-12 this script used
+          n tau2 > log n, which depends on the unit of the outcome.
   GLS     weights Omega^+ 1 / 1'Omega^+ 1 (pseudo-inverse: Omega is near singular)
   2SLS    all q environments = the subset S = {0..q-1}, itself one of the J functionals
   best    the functional with the smallest estimated variance
@@ -94,11 +97,12 @@ def one_rep(n, pis, beta, gamma, subsets, rng):
     v = np.diag(Om) / n
     out = {}
     t2 = pairwise_tau2(psi, v)
-    for name, tau2 in (("EB", t2), ("EB-thr", t2 if n * t2 > np.log(n) else 0.0)):
+    keep = t2 > np.log(n) * v.mean()                       # scale-free threshold
+    for name, tau2 in (("EB", t2), ("EB-thr", t2 if keep else 0.0)):
         w = 1 / (v + tau2); w /= w.sum()
         out[name] = (w @ psi, np.sqrt(w @ Om @ w / n))
     ev = np.linalg.eigvalsh(Om)
-    diag = {"rank": int((ev > 1e-8 * ev.max()).sum()), "fired": float(n * t2 > np.log(n))}
+    diag = {"rank": int((ev > 1e-8 * ev.max()).sum()), "fired": float(keep), "positive": float(t2 > 0)}
     for rc, name in ((1e-8, "GLS"), (1e-4, "GLS-1e-4")):
         g = np.linalg.pinv(Om, rcond=rc) @ np.ones(len(psi))
         diag["gsum" if rc == 1e-8 else "gsum4"] = g.sum()
@@ -125,7 +129,8 @@ def run(n, q, pis, beta, gamma, reps, seed):
           f"| targets: mean={tg.mean():.3f} sd={tg.std():.3f} (ATE={beta}) | mean tau2-hat={np.mean(t2s):.4f}")
     D = {k: np.array([d[k] for d in diags]) for k in diags[0]}
     print(f"diagnostics: Omega-hat rank median {np.median(D['rank']):.0f} of {len(subsets)}; "
-          f"threshold n*tau2 > log n fired in {100*D['fired'].mean():.1f}% of reps; "
+          f"tau2-hat > 0 in {100*D['positive'].mean():.1f}% of reps, kept by the threshold "
+          f"tau2 > log(n) mean(v) in {100*D['fired'].mean():.1f}%; "
           f"1'Omega^+1: median {np.median(D['gsum']):.3g} (rcond 1e-8) vs {np.median(D['gsum4']):.3g} (1e-4)")
     print(f"coverage below is for the ATE beta; for gamma != 0 the subset targets differ from beta")
     print(f"{'method':8s} {'bias':>8s} {'sd':>8s} {'rmse':>8s} {'mean se':>8s} {'cov90(ATE)':>10s}")
