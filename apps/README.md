@@ -1,4 +1,9 @@
-# NSW application with unit-level influence contributions
+# Applications
+
+Two sets of scripts: the NSW application with unit-level influence contributions (below), and
+`ck_intervals.py` for the Card-Krueger prediction intervals (last section).
+
+## NSW application with unit-level influence contributions
 
 The published run (`data/lalonde_functionals_hapc.py`) stored one line per estimator and
 nothing per unit, so the covariance between the estimators, and with it a valid standard
@@ -12,7 +17,7 @@ per-row predictions of every nuisance fit and assemble everything else afterward
 | `nsw_assemble.py` | estimators, person-level influence matrix `Phi`, `Sigma = Phi'Phi`, pooled estimates, intervals, `report.md` | anywhere, seconds |
 | `inference.py` | dispersion estimators, weights, sandwich, thresholding, conformal intervals from `(psi, Phi)` | imported |
 
-## Launch on FinisTerrae III
+### Launch on FinisTerrae III
 
 ```bash
 cd /mnt/lustre/scratch/nlsas/home/csic/dml/cgm/shrident && git pull && bash hpc/run_nsw_if.sh
@@ -23,7 +28,7 @@ This prepares `results/nsw_if_hapc_K5_s20261012/`, submits 24 tasks for the CPS-
 assembly. The report is `results/nsw_if_hapc_K5_s20261012/assembled/report.md`.
 Commit the run directory the day it finishes.
 
-## What is fitted
+### What is fitted
 
 Fold 0 is the full-sample fit; folds 1 to K train without the persons of that fold and
 predict them (cross-fitting). Training rows are stacked as in the published run, because
@@ -40,7 +45,7 @@ the CV folds of `cv_hapc` depend on row order.
 
 The two new fits per block are the second nuisance of each doubly robust estimator.
 
-## What is assembled
+### What is assembled
 
 | Set | Estimators | Unit-level contributions | Goes to |
 |---|---|---|---|
@@ -56,7 +61,7 @@ the one-step estimates against the external samples.
 The unit is the person: CPS-3 is a subsample of CPS-2 and PSID-3 of PSID-2 (all 429 and
 128 rows match), so the data hold 3067 persons in 3624 rows.
 
-## Checks
+### Checks
 
 - `nsw_assemble.py` exits 2 if a full-sample fit is missing and 3 if a plug-in estimate
   differs from `data/lalonde_functionals_hapc.csv` by more than `--tol` (default 0.5).
@@ -72,3 +77,15 @@ python apps/nsw_prepare.py --run /tmp/nsw_smoke --K 2 --frac 0.12 --smoke
 seq 0 53 | xargs -P 6 -I{} python apps/nsw_fit_nuisances.py --run /tmp/nsw_smoke --task {}
 python apps/nsw_assemble.py --run /tmp/nsw_smoke
 ```
+
+## Card-Krueger prediction intervals
+
+```bash
+python apps/ck_intervals.py --out results/ck94_intervals_B2000_s42
+```
+
+Reads `data/ck94_functionals.csv` and refits nothing. Output in the named directory:
+`pooled.csv` (the four sets of the article's table), `intervals.csv` (split conformal
+interval for one recorded split, quantiles of its endpoints over 2000 splits, and the
+leave-one-out interval), `split.csv`, `MANIFEST`. The script exits 3 if its
+leave-one-out scores differ from the column `S_loo` written by the R script.
