@@ -1,0 +1,7 @@
+contrast,estimate,se,z
+precision-weighted minus convex,1.614265,0.604778,2.669188
+unweighted mean minus convex,2.740037,0.994384,2.755512
+unweighted mean minus precision-weighted,1.125771,0.466417,2.413660
+DIM-PA-KFC minus DIM-PA-all,-4.575000,1.408998,-3.246989
+OM-PA-north minus OM-PA-all,4.387203,2.853314,1.537582
+slope of the estimates on their standard errors,1.484511,0.931633,1.593450
