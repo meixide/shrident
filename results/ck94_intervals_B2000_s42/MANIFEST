@@ -14,3 +14,4 @@ share_of_splits_with_tau2_train_zero=0.0250
 loo_scores_max_gap_to_R_output=5.77e-15
 numpy_version=2.2.6
 pandas_version=2.3.2
+note=apps/ck_intervals.py was run from the working tree on top of git_commit and first committed in d82f317
