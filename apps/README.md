@@ -1,7 +1,7 @@
 # Applications
 
-Two sets of scripts: the NSW application with unit-level influence contributions (below), and
-`ck_intervals.py` for the Card-Krueger prediction intervals (last section).
+Three sets of scripts: the NSW application with unit-level influence contributions (below), the
+NSW catalogue of formulas drawn at random, and the Card-Krueger application (last two sections).
 
 ## NSW application with unit-level influence contributions
 
@@ -78,14 +78,37 @@ seq 0 53 | xargs -P 6 -I{} python apps/nsw_fit_nuisances.py --run /tmp/nsw_smoke
 python apps/nsw_assemble.py --run /tmp/nsw_smoke
 ```
 
-## Card-Krueger prediction intervals
+## NSW: prediction over a declared catalogue of formulas
 
 ```bash
-python apps/ck_intervals.py --out results/ck94_intervals_B2000_s42
+python apps/nsw_catalogue.py --out results/nsw_catalogue_dr_parametric_J30_s20261012
 ```
 
-Reads `data/ck94_functionals.csv` and refits nothing. Output in the named directory:
-`pooled.csv` (the four sets of the article's table), `intervals.csv` (split conformal
-interval for one recorded split, quantiles of its endpoints over 2000 splits, and the
-leave-one-out interval), `split.csv`, `MANIFEST`. The script exits 3 if its
-leave-one-out scores differ from the column `S_loo` written by the R script.
+Catalogue of 512 formulas (CPS-2 or PSID-2; doubly robust estimator with a linear outcome
+model and a logistic score in every subset of the 8 covariates). Thirty-one are drawn at
+random without replacement; the split conformal interval for the estimate of the last one
+is exact by design (Proposition 4 of the article). Output: `catalogue.csv`, `draw.csv`
+(the recorded draw), `interval.csv` (the recorded interval and a summary over 20,000
+further draws), `MANIFEST`. Runs in seconds.
+
+## Card-Krueger: covariance matrix, pooled estimates, intervals
+
+```bash
+Rscript apps/ck_jackknife.R results/ck94_jackknife_stratified
+python apps/ck_intervals.py --out results/ck94_intervals_jackknife_B2000_s42 --jackknife results/ck94_jackknife_stratified
+Rscript apps/ck_forest.R results/ck94_intervals_jackknife_B2000_s42
+```
+
+`ck_jackknife.R` recomputes the 25 estimates of `data/ck94_functionals.R` (exit status 3
+if they differ from `data/ck94_functionals.csv`) and writes restaurant-level influence
+contributions from a delete-one jackknife stratified by state. `ck_intervals.py` then
+gives, for each set of estimators, the dispersion estimates, the precision-weighted and
+the convex pooled estimates with sandwich standard errors (columns `_zero`: dispersion
+set to zero, the version valid under exact identification), contrasts between estimates,
+and the prediction intervals. These two directories are the source of the article's
+Card-Krueger numbers.
+
+The variances in `data/ck94_functionals.csv` are **not** used: for the adjusted
+estimators they omit the Pennsylvania-side variance and are between 0.12 and 0.40 of
+the jackknife standard errors (`checks/ck_jackknife_crosscheck.out`).
+`results/ck94_intervals_B2000_s42/` was computed with them and is kept only as a record.
