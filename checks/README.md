@@ -16,3 +16,7 @@ Run with a Python that has numpy/pandas (e.g. ~/miniconda3/bin/python3) from the
 - `kolesar_connection.py` (+ `.out`) — Kolesár et al. (JBES 2015) cluster case: the between-
   cluster slope equals the inverse-variance pooled functional of pairwise Walds; the unweighted
   mean of the pairwise discrepancies diverges (Cauchy-like).
+- `tsls_if_finite_difference.py` (+ `.out`) — finite-difference check of the 2SLS influence
+  function in `iv_environments_sim.tsls_if` (relative error ~2e-7 for gamma = 0 and 2).
+  Note: in `iv_environments_sim.py` every environment is observational, including Z=0; this is
+  not the randomized-environment design of Example ex:iv_subset.
