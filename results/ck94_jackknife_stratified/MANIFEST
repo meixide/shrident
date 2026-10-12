@@ -1,0 +1,10 @@
+run=ck94_jackknife_stratified
+created_utc=2026-10-12T15:23:53Z
+git_commit=a2c41956487daa12793a27f0baa23d2f45b7068f
+input=data/ck94.csv md5=d4876b98865645af65954009ae0581ea
+restaurants=384 NJ=309 PA=75
+estimators=25
+variance=delete-one jackknife, stratified by state, factor (n_s-1)/n_s
+full_sample_max_gap_to_published=5.33e-15
+loo_fallbacks_total=0 (adjusted estimator set to the difference in means when no covariate varies)
+R_version=R version 4.3.2 (2023-10-31)

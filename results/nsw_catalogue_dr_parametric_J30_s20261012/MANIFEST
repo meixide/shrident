@@ -1,0 +1,15 @@
+run=nsw_catalogue_dr_parametric_J30_s20261012
+created_utc=2026-10-12T15:23:56Z
+git_commit=a2c41956487daa12793a27f0baa23d2f45b7068f
+git_dirty=no
+data=data/lalonde_combined.csv sha256=619023dc8ebb1d23309bdd6e03c5593c200434dea98a87cc5adfd463b8c0b8c9
+catalogue=512 formulas: samples CPS-2, PSID-2 x every subset of 8 covariates
+estimator=doubly robust for the effect on the treated; linear outcome model, logistic score; empty subset = difference in means
+variance=efficient influence function at the fitted nuisances
+experimental_benchmark=1794.34
+J=30 n_train=15 n_cal=15 nominal_level=1-2/(n_cal+1)=0.875000
+draw_seed=20261012 (numpy default_rng; the recorded draw is the first, stored in draw.csv)
+further_draws_R=20000
+sampling=without replacement from the catalogue
+numpy_version=2.2.6
+pandas_version=2.3.2

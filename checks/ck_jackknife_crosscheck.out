@@ -1,0 +1,29 @@
+         label jackknife bootstrap_sd published draws_undefined
+    DIM-PA-all     1.342        1.298     1.342               0
+     OM-PA-all     1.313        1.279     0.486               0
+    IPW-PA-all     1.318        1.276     0.501               0
+  DIM-PA-north     1.566        1.499     1.555               0
+   OM-PA-north     2.997        1.954     0.484               0
+  IPW-PA-north     3.418        2.141     0.695               0
+   DIM-PA-east     2.000        1.963     1.989               0
+    OM-PA-east     2.316        2.258     0.497               0
+   IPW-PA-east     2.260        2.204     0.580               0
+     DIM-PA-BK     2.481        2.401     2.461               0
+    DIM-PA-KFC     0.906        0.891     0.883               0
+     OM-PA-KFC     1.394        1.247     0.485              47
+    IPW-PA-KFC     1.394        1.148     0.560             485
+     DIM-PA-RR     2.125        2.060     2.078               0
+      OM-PA-RR     4.423        3.936     0.527               7
+     IPW-PA-RR     4.423        3.818     0.987              28
+ DIM-PA-Wendys     2.748        2.594     2.660               0
+  OM-PA-Wendys     2.876        2.667     0.504               6
+ IPW-PA-Wendys     2.876        2.554     0.835             285
+   DIM-PA-corp     1.470        1.415     1.453               0
+    OM-PA-corp     2.639        2.412     0.499               0
+   IPW-PA-corp     2.639        2.391     0.652               0
+   DIM-PA-fran     1.855        1.798     1.849               0
+    OM-PA-fran     2.095        1.959     0.492               0
+   IPW-PA-fran     2.095        1.959     0.546               0
+
+OM-PA-all, heteroskedasticity-consistent formula: 1.298
+ratio published / jackknife standard error, adjusted estimators: 0.12 to 0.40
