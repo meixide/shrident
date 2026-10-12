@@ -1,6 +1,9 @@
 """Is GLS / GMM worth it? Simulation in the design of Example ex:iv_subset.
 
 q environments Z in {0..q-1} with treatment propensities pi_z; unmeasured confounding.
+NOTE (aider round 3, F2): every environment here is observational, including Z=0. This is not
+the design of Example ex:iv_subset, where Z=0 is a randomized study; it isolates the part of
+that example built from Wald/2SLS functionals across observational environments.
 Potential treatments A(z) = 1{V < pi_z} (monotone), effects Delta = beta + gamma (V - 1/2),
 Y(0) = c V + e. For every subset S of environments with |S| >= 2 (J = 2^q - q - 1) the
 2SLS estimator of the effect using only units with Z in S is one identifying functional.
