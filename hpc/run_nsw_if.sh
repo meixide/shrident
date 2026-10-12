@@ -6,18 +6,23 @@
 #   bash hpc/run_nsw_if.sh 5 777      # another fold seed -> another run directory
 #   bash hpc/run_nsw_if.sh 0          # full-sample fits only (no cross-fitting)
 #
-# It creates results/nsw_if_hapc_K<K>_s<SEED>/ (refusing to reuse a directory),
+# It creates results/nsw_if_hapc<version>_K<K>_s<SEED>/ (refusing to reuse a directory),
 # submits one array for the CPS-2 block and one for the other blocks, and chains
 # the assembly job on both.
 set -euo pipefail
 cd "$(dirname "$0")/.."          # repo root
 K=${1:-5}
 SEED=${2:-20261012}
-RUN=results/nsw_if_hapc_K${K}_s${SEED}
 mkdir -p logs results
 
 source /opt/cesga/2020/software/Core/miniconda3/22.11.1-1/etc/profile.d/conda.sh
 set +u; conda activate "${ENV_NAME:-ft3hapc}"; set -u
+
+# The hapc version is part of the directory name: a run made after hpc/update_hapc.sh
+# never lands in the directory of an earlier one. (The run made with hapc 2.3.0 on
+# 2026-10-12 predates this and is results/nsw_if_hapc_K5_s20261012.)
+HV=$(python -c "import hapc; print(getattr(hapc, '__version__', 'unknown').replace('.', ''))")
+RUN=results/nsw_if_hapc${HV}_K${K}_s${SEED}
 
 python apps/nsw_prepare.py --run "$RUN" --K "$K" --seed "$SEED"
 

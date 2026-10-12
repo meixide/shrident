@@ -23,10 +23,17 @@ per-row predictions of every nuisance fit and assemble everything else afterward
 cd /mnt/lustre/scratch/nlsas/home/csic/dml/cgm/shrident && git pull && bash hpc/run_nsw_if.sh
 ```
 
-This prepares `results/nsw_if_hapc_K5_s20261012/`, submits 24 tasks for the CPS-2 block
-(2 cores, 24 h limit) and 84 for the other blocks (1 core, 2 h limit), and chains the
-assembly. The report is `results/nsw_if_hapc_K5_s20261012/assembled/report.md`.
-Commit the run directory the day it finishes.
+This prepares `results/nsw_if_hapc<version>_K5_s20261012/`, submits 24 tasks for the CPS-2
+block (2 cores, 24 h limit) and 84 for the other blocks (1 core, 2 h limit), and chains the
+assembly. The report is `assembled/report.md` in that directory. Commit the run directory
+the day it finishes. The run of 2026-10-12 used hapc 2.3.0 and is
+`results/nsw_if_hapc_K5_s20261012/` (its name predates the version tag).
+
+To rebuild hapc from its current GitHub head, with no hapc job queued or running:
+
+```bash
+bash hpc/update_hapc.sh
+```
 
 ### What is fitted
 
