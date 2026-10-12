@@ -28,7 +28,9 @@ import argparse
 import glob
 import json
 import os
+import subprocess
 import sys
+from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -289,12 +291,15 @@ def main():
     inf = pd.DataFrame(inf_rows)
     inf.to_csv(os.path.join(out_dir, "inference.csv"), index=False, float_format="%.10g")
     show = ["set", "analysis", "J", "tau_pair", "psi_eb_pair", "se_sandwich_pair", "se_working_pair", "ci_lo_pair",
-            "ci_hi_pair", "tau2_over_mean_v", "kappa", "threshold_fired", "dispersion_z", "psi_eb_thr", "se_sandwich_thr", "best_single", "se_best_single",
+            "ci_hi_pair", "tau2_over_mean_v", "dispersion_z", "psi_eb_zero", "se_sandwich_zero", "ci_lo_zero", "ci_hi_zero",
+            "psi_convex_zero", "se_convex_zero", "ci_lo_convex_zero", "ci_hi_convex_zero", "support_convex_zero", "best_single", "se_best_single",
             "psi_gls", "se_gls", "sigma_rank", "corr_mean"]
     rep += ["", "## Pooled estimates", "",
-            "`threshold_fired` says whether the dispersion is kept by the rule tau2 > kappa * mean(v) with "
-            "kappa = log(persons); `dispersion_z` is the sample variance of the estimates standardised by its "
-            "mean and standard deviation under exact identification, computed from Sigma.", "",
+            "Columns ending in `_zero` set the dispersion to zero: they are the estimates whose sandwich interval is "
+            "valid when exact identification is maintained. `psi_convex` is the convex combination (weights "
+            "minimising w'(Sigma + t I)w over the simplex); `support_convex` counts its non-zero weights. "
+            "`dispersion_z` is the sample variance of the estimates standardised by its mean and standard "
+            "deviation under exact identification, computed from Sigma.", "",
             "`se_sandwich` uses the person-level influence matrix; `se_working` is the working-independence "
             "formula of arXiv v2 and is not a valid standard error.", "", md_table(inf[show], "{:.4g}")]
     if conf_rows:
@@ -305,6 +310,30 @@ def main():
                 md_table(conf, "{:.4g}")]
     with open(os.path.join(out_dir, "report.md"), "w") as f:
         f.write("\n".join(rep) + "\n")
+    # The run's MANIFEST describes the fits. This one describes the assembly, which can be
+    # redone with later code without refitting; it supersedes any inference setting recorded
+    # in the run's MANIFEST (runs prepared before 2026-10-12 record a dispersion threshold
+    # that the assembly no longer uses).
+    def sh(*cmd):
+        try:
+            return subprocess.check_output(cmd, cwd=C.ROOT, stderr=subprocess.DEVNULL).decode().strip()
+        except Exception:
+            return "unavailable"
+    with open(os.path.join(out_dir, "MANIFEST"), "w") as f:
+        f.write("\n".join([
+            f"assembled_utc={datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
+            f"assembly_git_commit={sh('git', 'rev-parse', 'HEAD')}",
+            f"assembly_git_dirty={'yes' if sh('git', 'status', '--porcelain', '--untracked-files=no') else 'no'}",
+            f"blocks={','.join(C.BLOCKS[b] for b in blocks)}",
+            f"sets={','.join(sets)}",
+            "article_set=onestep_xfit",
+            "inference=pooled estimates with the dispersion set to zero (_zero) and plug-in (_pair, _dl); no threshold",
+            "convex=weights minimising w'(Sigma + t I)w over the simplex, SLSQP",
+            f"published_table_tolerance={a.tol}",
+            "plugin_estimates_differing_from_published="
+            + ("not checked (not a publishable run)" if not publishable else ",".join(check_fail) if check_fail else "none"),
+            f"conformal_B={CONF_B} conformal_seed={CONF_SEED}",
+            f"numpy_version={np.__version__}", f"pandas_version={pd.__version__}"]) + "\n")
     print("\n".join(rep))
     print(f"\nwritten: {out_dir}")
     if check_fail:

@@ -31,20 +31,6 @@ def tau2_dl(psi, v):
     return max(0.0, float((q - (len(psi) - 1)) / c))
 
 
-def tau2_thresholded(tau2, v, n_units, kappa=None):
-    """Proposition 3(iii) on a scale-free footing: zero unless tau2 > kappa_n * mean(v).
-
-    The paper writes the rule as n * tau2 > kappa_n, which depends on the unit of the
-    outcome. Since v_j = omega_jj / n, comparing tau2 with kappa_n * mean(v) is the same
-    rule with kappa_n multiplied by the average of the omega_jj: it satisfies the same
-    two conditions (kappa_n -> infinity, kappa_n / n -> 0) and is invariant to rescaling.
-    Default kappa_n = log n.
-    """
-    kappa = np.log(n_units) if kappa is None else kappa
-    ratio = tau2 / float(np.mean(v))
-    return (tau2 if ratio > kappa else 0.0), bool(ratio > kappa), ratio
-
-
 def dispersion_z(psi, Sigma):
     """Standardised dispersion of the estimates under exact identification.
 
@@ -67,6 +53,27 @@ def eb_weights(v, tau2):
     return w / w.sum()
 
 
+def convex_weights(S):
+    """Minimum of w'Sw over the simplex {w >= 0, 1'w = 1} (convex averaging).
+
+    The simplex contains every vertex and the precision weights, so the minimum is no larger
+    than the smallest diagonal entry of S or than the value at the precision weights. With S
+    diagonal the solution is w_j proportional to 1/S_jj. Solved by SLSQP from the precision
+    weights, after rescaling S; S may be singular.
+    """
+    from scipy.optimize import minimize
+    J = len(S)
+    S = np.asarray(S, float) / np.trace(S) * J
+    w0 = 1 / np.diag(S)
+    w0 /= w0.sum()
+    r = minimize(lambda w: w @ S @ w, w0, jac=lambda w: 2 * S @ w, method="SLSQP", bounds=[(0.0, 1.0)] * J,
+                 constraints=[{"type": "eq", "fun": lambda w: w.sum() - 1, "jac": lambda w: np.ones(J)}],
+                 options={"ftol": 1e-13, "maxiter": 1000})
+    w = np.clip(r.x, 0, None)
+    w[w < 1e-9] = 0.0
+    return w / w.sum()
+
+
 def gls_weights(Sigma, rcond=1e-8):
     """Minimum-variance weights Sigma^+ 1 / 1' Sigma^+ 1 (pseudo-inverse; reported with its rank)."""
     ev = np.linalg.eigvalsh(Sigma)
@@ -76,7 +83,7 @@ def gls_weights(Sigma, rcond=1e-8):
 
 
 # ---------------------------------------------------------------- pooled estimate
-def pooled(psi, Phi, n_units=None, level=0.95, kappa=None):
+def pooled(psi, Phi, n_units=None, level=0.95):
     """EB pooled estimate with its valid (sandwich) and invalid (working) standard errors."""
     psi = np.asarray(psi, float)
     Sigma = Phi.T @ Phi
@@ -84,17 +91,24 @@ def pooled(psi, Phi, n_units=None, level=0.95, kappa=None):
     n_units = Phi.shape[0] if n_units is None else n_units
     out = {"J": len(psi)}
     t_pair, t_dl = tau2_pairwise(psi, v), tau2_dl(psi, v)
-    t_thr, fired, ratio = tau2_thresholded(t_pair, v, n_units, kappa)
-    out.update(tau_pair=np.sqrt(t_pair), tau_dl=np.sqrt(t_dl), tau2_over_mean_v=ratio,
-               kappa=np.log(n_units) if kappa is None else kappa, threshold_fired=fired)
+    out.update(tau_pair=np.sqrt(t_pair), tau_dl=np.sqrt(t_dl), tau2_over_mean_v=t_pair / float(np.mean(v)))
     out.update(dispersion_z=float(dispersion_z(psi, Sigma)))
-    for name, t in (("pair", t_pair), ("thr", t_thr), ("dl", t_dl)):
+    # "zero": dispersion set to zero, the version whose interval is valid under exact
+    # identification (Propositions 2(iii) and 3 of the article); "pair", "dl": plug-in versions.
+    for name, t in (("zero", 0.0), ("pair", t_pair), ("dl", t_dl)):
         w = eb_weights(v, t)
         est = float(w @ psi)
         se = float(np.sqrt(w @ Sigma @ w))                 # observation-level sandwich
         se_work = float(np.sqrt(1 / np.sum(1 / (v + t))))  # working independence: NOT valid
         out.update({f"psi_eb_{name}": est, f"se_sandwich_{name}": se, f"se_working_{name}": se_work,
                     f"ci_lo_{name}": est - Z[level] * se, f"ci_hi_{name}": est + Z[level] * se})
+    # convex combination: weights minimise w'(Sigma + t I)w over the simplex
+    for name, t in (("zero", 0.0), ("pair", t_pair)):
+        w = convex_weights(Sigma + t * np.eye(len(psi)))
+        est, se = float(w @ psi), float(np.sqrt(w @ Sigma @ w))
+        out.update({f"psi_convex_{name}": est, f"se_convex_{name}": se,
+                    f"ci_lo_convex_{name}": est - Z[level] * se, f"ci_hi_convex_{name}": est + Z[level] * se,
+                    f"support_convex_{name}": int((w > 0).sum())})
     k = int(np.argmin(v))
     out.update(best_single_index=k, psi_best_single=float(psi[k]), se_best_single=float(np.sqrt(v[k])))
     wg, rank = gls_weights(Sigma)

@@ -81,7 +81,7 @@ def main():
         f"pandas_version={pd.__version__}",
         f"python_version={platform.python_version()}",
         f"tasks={len(tasks)}",
-        "threshold=dispersion kept if tau2 > log(persons in the analysis) * mean(v); set in apps/inference.py",
+        "intervals=sandwich at dispersion zero (exact identification maintained) and plug-in versions; apps/inference.py",
         "conformal_B=2000 conformal_seed=42; set in apps/nsw_assemble.py",
     ]
     with open(os.path.join(a.run, "MANIFEST"), "w") as f:
