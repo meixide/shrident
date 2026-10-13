@@ -1,0 +1,19 @@
+{
+ "task": 0,
+ "block": 0,
+ "nuisance": "e_rct",
+ "fold": 0,
+ "family": "binomial",
+ "n_train": 445,
+ "n_pred": 445,
+ "npcs": 38,
+ "best_lambda": 0.2920678236914144,
+ "cv_index": 15,
+ "cv_grid_last": 39,
+ "cv_verdict": "interior",
+ "elapsed_s": 149.3,
+ "hapc_version": "2.3.0",
+ "numpy_version": "2.2.6",
+ "threads": "1",
+ "host": "c211-14"
+}

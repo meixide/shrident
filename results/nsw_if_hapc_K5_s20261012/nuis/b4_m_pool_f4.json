@@ -1,0 +1,19 @@
+{
+ "task": 88,
+ "block": 4,
+ "nuisance": "m_pool",
+ "fold": 4,
+ "family": "gaussian",
+ "n_train": 311,
+ "n_pred": 114,
+ "npcs": 31,
+ "best_lambda": 383.26166284518416,
+ "cv_index": 25,
+ "cv_grid_last": 39,
+ "cv_verdict": "interior",
+ "elapsed_s": 0.3,
+ "hapc_version": "2.3.0",
+ "numpy_version": "2.2.6",
+ "threads": "1",
+ "host": "c211-20"
+}
