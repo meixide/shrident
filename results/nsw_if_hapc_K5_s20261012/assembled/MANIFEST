@@ -1,0 +1,13 @@
+assembled_utc=2026-10-12T19:46:57Z
+assembly_git_commit=9ee9a950500b09183ebbd701de2fdf1795ae31f3
+assembly_git_dirty=no
+blocks=RCT,CPS-2,CPS-3,PSID-2,PSID-3
+sets=onestep_xfit,onestep_full,plugin_eif,plugin_known
+article_set=onestep_xfit
+inference=pooled estimates with the dispersion set to zero (_zero) and plug-in (_pair, _dl); no threshold
+convex=weights minimising w'(Sigma + t I)w over the simplex, SLSQP
+published_table_tolerance=0.5
+plugin_estimates_differing_from_published=none
+conformal_B=2000 conformal_seed=42
+numpy_version=2.2.6
+pandas_version=3.0.3

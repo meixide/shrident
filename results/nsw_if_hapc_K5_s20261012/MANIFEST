@@ -1,0 +1,31 @@
+run=nsw_if_hapc_K5_s20261012
+created_utc=2026-10-12T11:14:23Z
+host=login210-18
+git_commit=dba733576f5c793d799ffde5ed33db6fefaaf3c6
+git_dirty=no
+data=data/lalonde_combined.csv sha256=619023dc8ebb1d23309bdd6e03c5593c200434dea98a87cc5adfd463b8c0b8c9
+rows=3624 persons=3067
+strata=cps2_in_cps3:429,cps2_only:1940,nsw_control:260,nsw_treated:185,psid2_in_psid3:128,psid2_only:125
+crossfit_folds=5
+fold_seed=20261012
+fold_assignment=persons permuted within stratum, fold = 1 + position mod K; recorded in units.csv
+person_subsample_frac=1.0
+smoke_grid=no
+learner=hapc.cv_hapc
+hapc_max_degree=2
+hapc_norm=1
+hapc_approx=False
+hapc_npcs_exponent=0.6
+hapc_log_lambda_min=-12.0
+hapc_log_lambda_max=16.0
+hapc_grid_length=40
+hapc_nfolds=5
+hapc_npcs=floor(n_train ** npcs_exponent)
+propensity_clip=1e-06
+hapc_version=2.3.0
+numpy_version=2.2.6
+pandas_version=3.0.3
+python_version=3.11.15
+tasks=108
+threshold=dispersion kept if tau2 > log(persons in the analysis) * mean(v); set in apps/inference.py
+conformal_B=2000 conformal_seed=42; set in apps/nsw_assemble.py
