@@ -5,8 +5,8 @@ NSW catalogue of formulas drawn at random, and the Card-Krueger application (las
 
 ## NSW application with unit-level influence contributions
 
-The published run (`data/lalonde_functionals_hapc.py`) stored one line per estimator and
-nothing per unit, so the covariance between the estimators, and with it a valid standard
+An earlier run, whose estimates are kept in `data/lalonde_functionals_hapc.csv` as a
+reference, stored one line per estimator and nothing per unit, so the covariance between the estimators, and with it a valid standard
 error for any pooled estimate, cannot be recovered from it. The scripts here store the
 per-row predictions of every nuisance fit and assemble everything else afterwards.
 
@@ -20,7 +20,7 @@ per-row predictions of every nuisance fit and assemble everything else afterward
 ### Launch on FinisTerrae III
 
 ```bash
-cd /mnt/lustre/scratch/nlsas/home/csic/dml/cgm/shrident && git pull && bash hpc/run_nsw_if.sh
+cd $LUSTRE/shrident && git pull && bash hpc/run_nsw_if.sh
 ```
 
 This prepares `results/nsw_if_hapc<version>_K5_s20261012/`, submits 24 tasks for the CPS-2
@@ -85,6 +85,18 @@ seq 0 53 | xargs -P 6 -I{} python apps/nsw_fit_nuisances.py --run /tmp/nsw_smoke
 python apps/nsw_assemble.py --run /tmp/nsw_smoke
 ```
 
+### Numbers and figure of the article
+
+```bash
+python apps/nsw_article_numbers.py --run results/nsw_if_hapc_K5_s20261012
+Rscript apps/nsw_forest.R results/nsw_if_hapc_K5_s20261012
+```
+
+`nsw_article_numbers.py` selects from `assembled/` the estimators, pooled estimates and
+contrasts reported in the article and writes them to `assembled/article/` (`estimators.csv`,
+`pooled.csv`, `contrasts.csv`, `summary.txt`); nothing is refitted. `nsw_forest.R` draws
+`assembled/article/nsw_forest.pdf` from those files.
+
 ## NSW: prediction over a declared catalogue of formulas
 
 ```bash
@@ -118,4 +130,3 @@ Card-Krueger numbers.
 The variances in `data/ck94_functionals.csv` are **not** used: for the adjusted
 estimators they omit the Pennsylvania-side variance and are between 0.12 and 0.40 of
 the jackknife standard errors (`checks/ck_jackknife_crosscheck.out`).
-`results/ck94_intervals_B2000_s42/` was computed with them and is kept only as a record.

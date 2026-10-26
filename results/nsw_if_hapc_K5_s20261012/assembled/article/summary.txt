@@ -1,0 +1,5 @@
+set=onestep_xfit
+persons=3067
+adjusted_set_correlations: min 0.105 median 0.465 max 0.980
+fits=108 interior=100 hours=65.5 longest_fit_hours=8.5 hapc=2.3.0
+not_interior=m_rct block 0 fold 3: plateau-high (null model); g_trt block 1 fold 0: boundary-low; g_trt block 1 fold 1: boundary-low; g_trt block 1 fold 2: boundary-low; g_trt block 1 fold 3: boundary-low; g_trt block 1 fold 4: boundary-low; g_trt block 1 fold 5: boundary-low; m_ec block 4 fold 3: boundary-low

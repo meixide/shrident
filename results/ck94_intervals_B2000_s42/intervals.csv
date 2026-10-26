@@ -1,8 +1,0 @@
-interval,level,lo,hi
-"split, recorded split",0.857143,-2.167544,7.316847
-"split, median over splits",0.857143,-1.856984,7.043663
-"split, first quartile of each endpoint",0.857143,-1.921646,6.930180
-"split, third quartile of each endpoint",0.857143,-1.813023,7.069988
-"split, 5% quantile of each endpoint",0.857143,-2.284687,4.406745
-"split, 95% quantile of each endpoint",0.857143,0.853621,7.279564
-leave-one-out,0.923077,-2.626334,7.827070

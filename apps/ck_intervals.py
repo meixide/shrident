@@ -7,8 +7,7 @@ With --jackknife, estimates, variances and the restaurant-level influence matrix
 a run of apps/ck_jackknife.R, so every pooled estimate has a sandwich standard error and
 the convex combination can be computed. Without it the script uses the variances of
 data/ck94_functionals.csv, which omit the Pennsylvania-side variance of the adjusted
-estimators (found on 2026-10-12); that mode is kept only to reproduce
-results/ck94_intervals_B2000_s42.
+estimators (found on 2026-10-12); that mode is kept only for comparison.
 
 Output: pooled.csv (one line per set of estimators), weights.csv and contrasts.csv (with
 --jackknife), estimates.csv, intervals.csv (split conformal interval

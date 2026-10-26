@@ -1,7 +1,7 @@
 """NSW application with stored nuisance predictions: shared definitions.
 
-The published run (data/lalonde_functionals_hapc.py) kept one line per estimator and
-nothing per unit, so the covariance between estimators cannot be recovered from it.
+An earlier run (whose estimates are kept in data/lalonde_functionals_hapc.csv) kept one
+line per estimator and nothing per unit, so the covariance between estimators cannot be recovered from it.
 Here every nuisance fit stores its per-row predictions, and the estimators, their
 unit-level influence contributions and the inference are assembled afterwards without
 refitting.

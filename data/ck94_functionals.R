@@ -8,7 +8,7 @@
 library(dplyr)
 library(sandwich)
 
-dir_data <- "~/Dropbox/Aplicaciones/Overleaf/shrinkage/data"
+dir_data <- "data"  # relative to the repository root
 
 # ── Load and clean ─────────────────────────────────────────────────────────────
 raw <- read.csv(file.path(dir_data, "ck94.csv")) |>

@@ -1,16 +1,12 @@
 # checks/
 
-Numerical checks behind the 2026-09-29 review of the JASA submission
-(internal notes: asertii `Multiple/2026-09 JRSSB rejection — review and experiments.md`).
+Numerical checks and simulations behind the article and its supplementary material.
 
 - `limit_experiment.py` — large-sample limit of sqrt(n)(psi_EB - psi*) under exact
   identification: non-Gaussian limit, sandwich coverage, variance vs best single
-  estimator vs GLS. Source of Table "Large-sample behaviour" in shrinkage_jasa/main.tex.
-- `dispersion_estimators.py` — pairwise vs DerSimonian–Laird tau-hat for NSW and
-  Card–Krueger from data/*.csv; also prints the working-independence SE reported
-  in arxivv2 for NSW (J=3).
+  estimator vs GLS. Source of the table of large-sample behavior in the article.
 
-Run with a Python that has numpy/pandas (e.g. ~/miniconda3/bin/python3) from the repo root.
+Run from the repository root with a Python that has numpy and pandas.
 - `iv_environments_sim.py` (+ `.out`) — Example ex:iv_subset: EB vs GLS vs 2SLS on all
   environments vs best single functional, exact and heterogeneous regimes (2026-09-30).
   EB-0 sets the dispersion to zero (Proposition 2(iii) of the article). The threshold rule of

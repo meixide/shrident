@@ -5,7 +5,7 @@
 # the CPS-2 block (long fits) and for the remaining blocks (minutes), with RUN
 # exported.
 #
-# Sizing comes from the seff reports of the published run (logs/hapc_7684731_*):
+# Sizing comes from the resource reports of an earlier full-data run:
 # every task used one core (6% of 16) and at most 4.4 GB (CPS-2); the other
 # blocks stayed under 0.5 GB.
 #
